@@ -7,7 +7,7 @@ import numpy as np
 
 class HAM10000Dataset(Dataset):
     """
-    HAM10000 Dataset
+    HAM10000 Dataset with Oversampling
     
     Classes:
     - MEL: Melanoma
@@ -19,7 +19,7 @@ class HAM10000Dataset(Dataset):
     - VASC: Vascular lesion
     """
     
-    def __init__(self, root_dir, train=True, transform=None):
+    def __init__(self, root_dir, train=True, transform=None, oversample_rates=None):
         self.root_dir = root_dir
         self.transform = transform
         
@@ -40,8 +40,24 @@ class HAM10000Dataset(Dataset):
         
         if train:
             self.df = self.df.iloc[indices[:split]]
+            # Apply oversampling if rates are provided
+            if oversample_rates:
+                self._oversample(oversample_rates)
         else:
             self.df = self.df.iloc[indices[split:]]
+            
+    def _oversample(self, oversample_rates):
+        """Oversample classes based on the given rates."""
+        for i, rate in enumerate(oversample_rates):
+            if rate > 1:
+                class_df = self.df[self.df[self.classes[i]] == 1]
+                oversampled_class = class_df.sample(
+                    n=len(class_df) * (rate - 1),
+                    replace=True,
+                    random_state=42
+                )
+                self.df = pd.concat([self.df, oversampled_class], ignore_index=True)
+        self.df = self.df.sample(frac=1, random_state=42).reset_index(drop=True)  # Shuffle the dataset
             
     def __len__(self):
         return len(self.df)
