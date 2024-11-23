@@ -1,0 +1,10 @@
+numpy
+black
+matplotlib
+opencv-python
+huggingface_hub
+openai
+onnxruntime
+onnx
+pycocotools
+open_clip_torch

@@ -1,0 +1,18 @@
+training:
+  epochs: 100
+  criterion:
+    name: "CrossEntropyLoss"
+    params: {}
+  optimizer:
+    name: "Adam"
+    params:
+      lr: 0.001
+      weight_decay: 0.0001
+  should_log: true
+  show_progress: true
+
+data:
+  batch_size: 32
+  num_workers: 4
+  path: "data/"
+  image_size: 224
