@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class CNN(nn.Module):
     def __init__(self, num_classes=7):
-        super(CNNExperiment, self).__init__()
+        super(CNN, self).__init__()
         self.features = nn.Sequential(
           # First block
           nn.Conv2d(3, 64, kernel_size=3, padding=1),
