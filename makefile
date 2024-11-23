@@ -21,11 +21,11 @@ download_data:
 
 prepare_data:
 	@echo "🔧 Preparing dataset..."
-	@mkdir -p data/images
-	@unzip -q -o data/raw/HAM10000_images_part1.zip -d data/images/ || true
-	@unzip -q -o data/raw/HAM10000_images_part2.zip -d data/images/ || true
-	@cp data/raw/HAM10000_metadata.csv data/metadata.csv
+	@python scripts/download_data.py
+	@if exist data\metadata.csv del data\metadata.csv
+	@copy data\raw\HAM10000_metadata.csv data\metadata.csv
 	@echo "✅ Data preparation complete!"
+
 
 clean_data:
 	@echo "🧹 Cleaning data directory..."
