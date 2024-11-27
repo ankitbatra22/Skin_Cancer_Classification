@@ -68,6 +68,10 @@ data:
 python -m experiments.my_experiment --config configs/my_experiment.yaml --output_dir outputs/my_experiment
 ```
 
+## Running Unit Tests
+
+Run unit tests with `make run_tests`
+
 ## Adding New Models
 1. Create a new model in `src/models/`
 2. Import it in your experiment script as mentioned above. 
