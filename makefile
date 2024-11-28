@@ -66,3 +66,6 @@ reset_environment:
 
 format:
 	black src
+
+run_tests:
+	python -m unittest discover tests
