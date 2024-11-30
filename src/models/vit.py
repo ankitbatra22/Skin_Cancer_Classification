@@ -57,14 +57,14 @@ class ViT(nn.Module):
     def __init__(
         self, 
         img_size=224,
-        patch_size=16,
+        patch_size=32,
         in_channels=3,
-        num_classes=1000,
-        embed_dim=768,
-        depth=12,
-        num_heads=12,
-        mlp_ratio=4.,
-        dropout=0.1
+        num_classes=7,
+        embed_dim=256,
+        depth=6,
+        num_heads=8,
+        mlp_ratio=2.,
+        dropout=0.2
     ):
         super().__init__()
         
@@ -95,7 +95,12 @@ class ViT(nn.Module):
         
         # Final normalization and classification head
         self.norm = nn.LayerNorm(embed_dim)
-        self.head = nn.Linear(embed_dim, num_classes)
+        self.head = nn.Sequential(
+            nn.Linear(embed_dim, embed_dim // 2),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(embed_dim // 2, num_classes)
+        )
         
         # Initialize weights
         nn.init.trunc_normal_(self.pos_embed, std=0.02)
