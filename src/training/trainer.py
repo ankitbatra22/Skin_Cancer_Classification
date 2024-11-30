@@ -30,6 +30,19 @@ class Trainer:
             **optim_config.get('params', {})
         )
     
+    def _setup_scheduler(self):
+        """Setup scheduler if specified in config"""
+        if 'scheduler' not in self.config['training']:
+            self.scheduler = None
+            return
+        
+        scheduler_config = self.config['training']['scheduler']
+        scheduler_class = getattr(torch.optim.lr_scheduler, scheduler_config['name'])
+        self.scheduler = scheduler_class(
+            self.optimizer,
+            **scheduler_config.get('params', {})
+        )
+    
     def _log_epoch(self, epoch: int, train_loss: float, val_metrics: Dict[str, float], epoch_time: float):
         """Print epoch results in a clean format"""
         print(f"\nEpoch [{epoch+1}/{self.config['training']['epochs']}] - {epoch_time:.2f}s")
@@ -70,6 +83,7 @@ class Trainer:
         
         model = model.to(self.device)
         self._setup_optimizer(model)
+        self._setup_scheduler()
         
         best_val_acc = 0.0
         start_time = time.time()
@@ -87,6 +101,13 @@ class Trainer:
             epoch_time = time.time() - epoch_start
             self._log_epoch(epoch, train_loss, val_metrics, epoch_time)
             
+            # Step scheduler if it exists
+            if self.scheduler is not None:
+                if isinstance(self.scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                    self.scheduler.step(val_metrics['val_loss'])
+                else:
+                    self.scheduler.step()
+            
             # Save best model
             if output_dir and val_metrics['val_acc'] > best_val_acc:
                 best_val_acc = val_metrics['val_acc']
@@ -95,6 +116,7 @@ class Trainer:
                     'epoch': epoch,
                     'model_state_dict': model.state_dict(),
                     'optimizer_state_dict': self.optimizer.state_dict(),
+                    'scheduler_state_dict': self.scheduler.state_dict() if self.scheduler else None,
                     'val_acc': best_val_acc,
                 }, str(output_path))
                 print(f"  Saved new best model with accuracy: {best_val_acc:.2f}%")

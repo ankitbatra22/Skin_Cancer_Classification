@@ -1,0 +1,33 @@
+model:
+  name: "ViT"
+  params:
+    img_size: 224
+    patch_size: 16
+    embed_dim: 768
+    depth: 12
+    num_heads: 12
+    mlp_ratio: 4
+    dropout: 0.1
+    num_classes: 7
+
+data:
+  batch_size: 32
+  num_workers: 4
+
+training:
+  epochs: 50
+  criterion:
+    name: "CrossEntropyLoss"
+    params:
+      reduction: "mean"
+  optimizer:
+    name: "AdamW"
+    params:
+      lr: 1.0e-4
+      weight_decay: 0.05
+  scheduler:
+    name: "CosineAnnealingWarmRestarts"
+    params:
+      T_0: 10
+      T_mult: 2
+      eta_min: 1.0e-6
