@@ -66,9 +66,23 @@ def main():
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    augmenter = VitTransforms()
-    train_dataset = HAM10000Dataset("data", train=True, transform=augmenter.train_transform)
-    val_dataset = HAM10000Dataset("data", train=False, transform=augmenter.val_transform)
+    data_aug_rate = [5, 1, 15, 20, 5, 65, 45] 
+
+    #augmenter = VitTransforms()
+
+    transform = transforms.Compose([
+        transforms.Resize((config['data']['image_size'], config['data']['image_size'])),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
+        transforms.RandomRotation(20),
+        transforms.ColorJitter(brightness=0.1, contrast=0.1, hue=0.1),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+
+    train_dataset = HAM10000Dataset("data", train=True, transform=transform, oversample_rates=data_aug_rate)
+    val_dataset = HAM10000Dataset("data", train=False, transform=transform)
 
     # Get class weights from dataset
     class_weights = train_dataset.get_class_weights().to(device)
