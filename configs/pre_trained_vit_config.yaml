@@ -7,6 +7,8 @@ model:
 data:
   batch_size: 128
   num_workers: 4
+  image_size: 224
+  path: "data/"
 
 training:
   epochs: 20
