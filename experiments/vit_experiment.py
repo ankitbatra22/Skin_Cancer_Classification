@@ -3,6 +3,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from src.models.vit import ViT
+from src.models.pretrained_vit import PretrainedViT
 from src.data.dataset import HAM10000Dataset
 from src.training.trainer import Trainer
 import argparse
@@ -69,7 +70,12 @@ def main():
     train_dataset = HAM10000Dataset("data", train=True, transform=augmenter.train_transform)
     val_dataset = HAM10000Dataset("data", train=False, transform=augmenter.val_transform)
 
+    # Get class weights from dataset
     class_weights = train_dataset.get_class_weights().to(device)
+
+    # Add weights to criterion params
+    if 'params' not in config['training']['criterion']:
+        config['training']['criterion']['params'] = {}
     config['training']['criterion']['params']['weight'] = class_weights
 
     # Create data loaders
@@ -89,8 +95,9 @@ def main():
         num_workers=config['data']['num_workers']
     )
 
-    model = ViT(**config['model']['params'])
-
+    #model = ViT(**config['model']['params'])
+    model = PretrainedViT(**config['model']['params'])
+    model = model.to(device)
     trainer = Trainer(config=config)
     trained_model = trainer.train(model=model, train_loader=train_loader, val_loader=val_loader)
 

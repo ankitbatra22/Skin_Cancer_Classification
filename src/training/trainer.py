@@ -5,6 +5,7 @@ from tqdm import tqdm
 import time
 from pathlib import Path
 import json
+from src.models.pretrained_vit import PretrainedViT
 
 class Trainer:
     def __init__(self, config: Dict[str, Any]):
@@ -120,6 +121,8 @@ class Trainer:
                     'val_acc': best_val_acc,
                 }, str(output_path))
                 print(f"  Saved new best model with accuracy: {best_val_acc:.2f}%")
+            
+            self._unfreeze_layers(model, epoch)
         
         total_time = time.time() - start_time
         print(f"\nTraining completed in {total_time/60:.2f} minutes")
@@ -137,6 +140,12 @@ class Trainer:
         
         for batch_idx, (images, labels) in enumerate(pbar):
             images, labels = images.to(self.device), labels.to(self.device)
+
+            if batch_idx == 0:
+                print(f"\nFirst batch shapes:")
+                print(f"Images: {images.shape}, device: {images.device}")
+                print(f"Labels: {labels.shape}, device: {labels.device}")
+                print(f"GPU memory used: {torch.cuda.memory_allocated() / 1e9:.2f} GB")
             
             self.optimizer.zero_grad()
             outputs = model(images)
@@ -172,3 +181,16 @@ class Trainer:
             'val_loss': val_loss / len(val_loader),
             'val_acc': 100. * correct / total
         } 
+    
+    def _unfreeze_layers(self, model, epoch):
+        """Gradually unfreeze layers as training progresses"""
+        if isinstance(model, PretrainedViT) and epoch in [5, 10, 15]:
+            blocks_to_unfreeze = (epoch // 5) * 2
+            print(f"\nUnfreezing last {blocks_to_unfreeze} transformer blocks")
+            for i, block in enumerate(model.model.blocks):
+                for param in block.parameters():
+                    param.requires_grad = (i >= len(model.model.blocks) - blocks_to_unfreeze)
+            
+            # Update optimizer with unfrozen parameters
+            self._setup_optimizer(model)
+        

@@ -1,0 +1,26 @@
+model:
+  name: "PretrainedViT"
+  params:
+    num_classes: 7
+    unfreeze_layers: 2
+
+data:
+  batch_size: 128
+  num_workers: 4
+
+training:
+  epochs: 20
+  criterion:
+    name: "CrossEntropyLoss"
+    params:
+      weight: null
+  optimizer:
+    name: "AdamW"
+    params:
+      lr: 1.0e-4
+      weight_decay: 0.01
+  scheduler:
+    name: "CosineAnnealingLR"
+    params:
+      T_max: 20
+      eta_min: 1.0e-6
