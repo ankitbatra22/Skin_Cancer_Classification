@@ -5,6 +5,7 @@ from tqdm import tqdm
 import time
 from pathlib import Path
 import json
+from utils.plotting import plot_training_metrics
 
 class Trainer:
     def __init__(self, config: Dict[str, Any]):
@@ -60,7 +61,8 @@ class Trainer:
         metrics = {
             'train_loss': self.train_losses,
             'val_loss': self.val_losses,
-            'val_accuracy': self.val_accuracies
+            'val_accuracy': self.val_accuracies,
+            'learning_rates': [group['lr'] for group in self.optimizer.param_groups]
         }
         
         output_dir = Path(output_dir)
@@ -68,6 +70,9 @@ class Trainer:
         
         with open(output_dir / 'metrics.json', 'w') as f:
             json.dump(metrics, f, indent=2)
+        
+        # Generate plots
+        plot_training_metrics(output_dir / 'metrics.json', output_dir)
     
     def train(
         self,
