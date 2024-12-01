@@ -212,6 +212,9 @@ class Trainer:
         all_preds = []
         all_labels = []
         
+        # Get class names from the dataset
+        classes = val_loader.dataset.classes if hasattr(val_loader.dataset, 'classes') else [f'Class {i}' for i in range(7)]
+        
         with torch.no_grad():
             for images, labels in tqdm(val_loader, desc='Validating'):
                 images, labels = images.to(self.device), labels.to(self.device)
@@ -241,9 +244,13 @@ class Trainer:
         
         print("\nFinal Model Performance:")
         print("------------------------")
-        print("Precision (per class):", metrics['precision'])
-        print("Recall (per class):", metrics['recall'])
-        print("F1 Score (per class):", metrics['f1'])
+        print("Per-class metrics:")
+        print("\nClass            Precision    Recall    F1-Score")
+        print("-" * 50)
+        for i, class_name in enumerate(classes):
+            print(f"{class_name:<15} {precision[i]:>9.2f}%  {recall[i]:>7.2f}%  {f1[i]:>8.2f}%")
+        
+        print(f"\nOverall Accuracy: {metrics['val_acc']:.2f}%")
         
         return metrics
     
