@@ -5,7 +5,7 @@ Training deep learning models on the HAM10000 dataset for skin cancer classifica
 ## Setup and Usage
 (Note: Below setup uses conda)
 1. Run `make setup_environment` to create the conda env with the correct python version and pip-tools
-2. Activate the newly created conda env with `conda activate robo`
+2. Activate the newly created conda env with `conda activate syde577`
 3. Run `make install_deps` to install the project dependencies
 
 **Important**: 
@@ -67,6 +67,10 @@ data:
 ```bash
 python -m experiments.my_experiment --config configs/my_experiment.yaml --output_dir outputs/my_experiment
 ```
+
+## Running Unit Tests
+
+Run unit tests with `make run_tests`
 
 ## Adding New Models
 1. Create a new model in `src/models/`
