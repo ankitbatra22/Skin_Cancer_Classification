@@ -1,13 +1,13 @@
 training:
-  epochs: 100
+  epochs: 10
   criterion:
     name: "CrossEntropyLoss"
     params: {}
   optimizer:
     name: "Adam"
     params:
-      lr: 0.001
-      weight_decay: 0.0001
+      lr: 0.01
+      weight_decay: 0.01
   should_log: true
   show_progress: true
 
@@ -16,3 +16,44 @@ data:
   num_workers: 4
   path: "data/"
   image_size: 224
+
+  
+#   original optuna run:
+#   training:
+#   epochs: 10
+#   criterion:
+#     name: "CrossEntropyLoss"
+#     params: {}
+#   optimizer:
+#     name: "Adam"
+#     params:
+#       lr: 0.001
+#       weight_decay: 0.0001
+#   should_log: true
+#   show_progress: true
+
+# data:
+#   batch_size: 32
+#   num_workers: 4
+#   path: "data/"
+#   image_size: 224
+
+# original optuna results:
+# training:
+#   epochs: 10
+#   criterion:
+#     name: "CrossEntropyLoss"
+#     params: {}
+#   optimizer:
+#     name: "Adam"
+#     params:
+#       lr: 5.9600852274928886e-05
+#       weight_decay: 0.01
+#   should_log: true
+#   show_progress: true
+
+# data:
+#   batch_size: 64
+#   num_workers: 4
+#   path: "data/"
+#   image_size: 224

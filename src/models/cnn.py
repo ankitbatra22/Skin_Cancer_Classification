@@ -48,10 +48,10 @@ class CNN(nn.Module):
           # Adaptive pooling for input size flexibility
           nn.AdaptiveAvgPool2d((1, 1)),
           nn.Flatten(),
-          nn.Dropout(0.5),  # Dropout to reduce overfitting
+          nn.Dropout(0.20076074108782382), # was 0.5, optuna results were 0.2
           nn.Linear(512, 256),
           nn.ReLU(inplace=True),
-          nn.Dropout(0.5),
+          nn.Dropout(0.20076074108782382),
           nn.Linear(256, num_classes)
         )
         

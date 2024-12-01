@@ -36,14 +36,14 @@ def main():
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
     
-    data_aug_rate = [20, 10, 5, 50, 1, 40, 5] 
+    # data_aug_rate = [20, 10, 5, 50, 1, 40, 5] 
 
     # Create datasets
     train_dataset = HAM10000Dataset(
         config['data']['path'], 
         train=True, 
         transform=transform,
-        oversample_rates=data_aug_rate
+        # oversample_rates=data_aug_rate
     )
 
     val_dataset = HAM10000Dataset(
