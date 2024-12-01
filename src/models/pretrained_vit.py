@@ -4,11 +4,20 @@ import torch.nn as nn
 class PretrainedViT(nn.Module):
     def __init__(self, num_classes=7, unfreeze_layers=0):
         super().__init__()
-        self.model = timm.create_model('vit_base_patch16_224', pretrained=True)
+        self.model = timm.create_model(
+            'vit_base_patch16_224',
+            pretrained=True,
+            drop_path_rate=0.2,  # Stochastic depth
+            drop_rate=0.1        # Dropout
+        )
         
-        # Replace classification head
+        # Replace classification head with better architecture
         self.model.head = nn.Sequential(
-            nn.Linear(768, 256),
+            nn.LayerNorm(768),
+            nn.Linear(768, 512),
+            nn.GELU(),
+            nn.Dropout(0.3),
+            nn.Linear(512, 256),
             nn.GELU(),
             nn.Dropout(0.2),
             nn.Linear(256, num_classes)
