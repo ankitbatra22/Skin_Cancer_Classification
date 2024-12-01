@@ -37,6 +37,7 @@ class Trainer:
         self.train_losses = []
         self.val_losses = []
         self.val_accuracies = []
+        self.val_metrics = None
         
         # Initialize early stopping
         early_stop_config = config.get('early_stopping', {})
@@ -128,6 +129,7 @@ class Trainer:
             
             # Validation phase
             val_metrics = self._validate(model, val_loader)
+            self.val_metrics = val_metrics  # Store the latest validation metrics
             
             epoch_time = time.time() - epoch_start
             self._log_epoch(epoch, train_loss, val_metrics, epoch_time)
@@ -226,6 +228,7 @@ class Trainer:
                 all_labels.extend(labels.cpu().numpy())
         
         # Compute detailed metrics
+        print("Computing final metrics...")
         precision, recall, f1 = self._compute_metrics(all_preds, all_labels)
         
         metrics = {
