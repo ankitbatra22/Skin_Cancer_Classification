@@ -5,6 +5,9 @@ from tqdm import tqdm
 import time
 from pathlib import Path
 import json
+from sklearn.metrics import precision_score, recall_score, f1_score, classification_report
+import numpy as np
+
 
 class Trainer:
     def __init__(self, config: Dict[str, Any]):
@@ -134,7 +137,9 @@ class Trainer:
         val_loss = 0
         correct = 0
         total = 0
-        
+        y_true = []  # True labels
+        y_pred = []  # Predicted labels
+
         with torch.no_grad():
             for images, labels in tqdm(val_loader, desc='Validating'):
                 images, labels = images.to(self.device), labels.to(self.device)
@@ -145,8 +150,25 @@ class Trainer:
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
                 correct += predicted.eq(labels).sum().item()
+
+                # Store predictions and true labels
+                y_true.extend(labels.cpu().numpy())
+                y_pred.extend(predicted.cpu().numpy())
         
+        # Calculate precision, recall, F1
+        precision = precision_score(y_true, y_pred, average=None)  # For each class
+        recall = recall_score(y_true, y_pred, average=None)
+        f1 = f1_score(y_true, y_pred, average=None)
+
+        # Print or log metrics
+        print("Precision (per class):", precision)
+        print("Recall (per class):", recall)
+        print("F1 Score (per class):", f1)
+
+        # Classification report (optional, for a detailed view)
+        print("\nClassification Report:\n", classification_report(y_true, y_pred, target_names=['MEL', 'NV', 'BCC', 'AKIEC', 'BKL', 'DF', 'VASC']))
+
         return {
             'val_loss': val_loss / len(val_loader),
             'val_acc': 100. * correct / total
-        } 
+        }
