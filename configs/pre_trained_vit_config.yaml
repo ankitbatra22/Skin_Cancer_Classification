@@ -12,7 +12,7 @@ data:
 
 training:
   early_stopping:
-    patience: 6
+    patience: 8
     min_delta: 0.001
   epochs: 50
   criterion:
