@@ -11,7 +11,10 @@ data:
   path: "data/"
 
 training:
-  epochs: 20
+  early_stopping:
+    patience: 4
+    min_delta: 0.001
+  epochs: 50
   criterion:
     name: "CrossEntropyLoss"
     params:
@@ -24,5 +27,5 @@ training:
   scheduler:
     name: "CosineAnnealingLR"
     params:
-      T_max: 20
+      T_max: 15
       eta_min: 1.0e-6
